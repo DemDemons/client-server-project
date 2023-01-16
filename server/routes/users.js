@@ -44,6 +44,7 @@ router.post('/copyFile', function (req, res, next) {
 })
 
 
+
 router.post('/register', function (req, res, next) {
   fs.readFile("./public/users.json", function (err, data) {
     if (err) { console.log(err) }
@@ -63,21 +64,37 @@ router.post('/register', function (req, res, next) {
 })
 
 router.post('/Dir', function (req, res, next) {
+  let mainDir = {}
+  let dirs = []
   let files = [];
-  try {
-    if (fs.existsSync(`./UserDir/${req.body.username}`)) {
-      console.log("if works");
-      fs.readdir(`./UserDir/${req.body.username}`, (err, dir) => {
-        if (err) { console.log(err); }
-        dir.forEach(file => {
-          files.push(file);
-        });
-        res.send(files)
-      })
+  // if(req.body.mainUserDir){
+  // }
+    try {
+      if (fs.existsSync(`./UserDir/${req.body.username}`)) {
+        fs.readdir(`./UserDir/${req.body.username}`, (err, dir) => {
+          if (err) {
+            console.log(err);
+          }
+          dir.forEach(file => {
+            console.log(`./UserDir/${req.body.username}/${file}`);
+            const stats = fs.statSync(`./UserDir/${req.body.username}/${file}`)
+            if (stats.isFile()) {
+              files.push(file);
+            } else if (stats.isDirectory()) {
+              dirs.push(file);
+            }
+          })
+          mainDir.files = files;
+          mainDir.dirs = dirs;
+  
+          res.send(mainDir)
+        })
+      }
+    } catch (err) {
+      console.log(err);
     }
-  } catch (err) {
-    console.log(err);
-  }
+  
+  // console.log(path.resolve(req.body.dirName))
 })
 
 router.post("/login", function (req, res, next) {
@@ -97,10 +114,11 @@ router.post("/login", function (req, res, next) {
 router.post("/addFile", function (req, res, next) {
   console.log(req.body.destination.includes(req.body.username));
   let path = ``;
-  if (req.body.destination.length === 0) {
+  if (req.body.destination === req.body.username) {
     path = `./UserDir/${req.body.username}/${req.body.fileName}`;
+  } else{
+    path = `./UserDir/${req.body.username}/${req.body.destination}/${req.body.fileName}`;
   }
-  path = `./UserDir/${req.body.username}/${req.body.destination}/${req.body.fileName}`;
   fs.appendFile(path, req.body.fileContent, function (err) {
     if (err) console.log(err);
     console.log('Saved!');

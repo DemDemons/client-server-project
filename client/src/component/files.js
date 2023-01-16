@@ -80,7 +80,6 @@ export default function Files(props) {
                 <button name={props.fileName} onClick={fetchContent}>Show Content</button>
                 <button name={props.fileName} onClick={changeFileName}>Change File name</button>
                 <button name={props.fileName} onClick={copyFile}>Copy file</button>
-                <button name={props.fileName} onClick={fetchContent}>Show Content</button>
                 <button name={props.fileName} onClick={fetchFileInfo}>Show info of file</button>
                 <button  name={props.fileName} onClick={fetchDelete}>Delete a file</button>
                 <p>{showContent ? content : null}</p>

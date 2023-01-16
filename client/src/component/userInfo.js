@@ -1,31 +1,29 @@
 import React, { useEffect, useState, useContext } from "react";
 import { userNameContext } from "./context/userName"
-import Dirs from "./dirs";
+import Dir from "./dirs";
 import Files from "./files";
 
 
 
 
 export default function UserInfo() {
-    //to be deleted 
-    // const currentUserName = useContext(userNameContext)
-    // const [content, setContent] = useState("");
-    // const [showContent, setShowContent] = useState(false);
-    let infoMap;
+    let dataFileMap = [];
+    let dataDirMap = [];
 
-    const [info, setInfo] = useState("")
+    const [fileMap, setFileMap] = useState("")
+    const [directories, setDirectories] = useState("")
     const [addFileCounter, setAddFileCounter] = useState(0)
     const currentUser = localStorage.getItem("currentUser")
+
     const fethcUserFiles = () => {
         let data = [];
-        let size = []
         console.log(data.length);
         if (data.length === 0) {
             fetch(`http://localhost:8080/users/Dir`,
                 {
                     method: 'POST',
                     headers: { "content-type": "application/json" },
-                    body: JSON.stringify({ username: currentUser })
+                    body: JSON.stringify({ username: currentUser, mainUserDir: true })
                 }
             )
                 .then((res) => res.json())
@@ -33,12 +31,14 @@ export default function UserInfo() {
                     data = fileList
                 })
                 .then(() => {
-                    infoMap = data.map((elem, index) => <Files func={fethcUserFiles} fileName={elem} key={index} />
-                    )
-                    setInfo(infoMap)
+                    dataFileMap = data.files.map((elem, index) => <Files func={fethcUserFiles} fileName={elem} key={index} />)
+                    dataDirMap = data.dirs.map((elem, index) => <Dir dirName={elem} key={index}/>)
+                    setDirectories(dataDirMap)
+                    setFileMap(dataFileMap)
                 })
         }
     }
+        
     const addFile = () => {
         let fileName = prompt("Please enter the new name of the file and it's type")
         let fileContent = prompt("Please enter the content of the file")
@@ -56,7 +56,6 @@ export default function UserInfo() {
     }
 
     useEffect(() => {
-        // setInfo(fethcUserFiles())
         fethcUserFiles()
     }, [addFileCounter])
 
@@ -65,11 +64,10 @@ export default function UserInfo() {
             <h1>Welcome {currentUser}</h1>
             <h2>these are your files</h2>
             <button onClick={addFile}>Add file</button>
-            <ul>{info}</ul>
-            <p>make new dir:</p>
-            <div>
-                {/* <Dirs /> */}
-            </div>
+            {/* <button onClick={addDirectory}>addDirectory</button> */}
+            <ul>{fileMap}</ul>
+            <ul>{directories}</ul>
+            
 
         </>
     );

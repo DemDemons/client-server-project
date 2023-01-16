@@ -1,22 +1,37 @@
-// import React, { useEffect, useState, useContext } from "react";
-// import { userNameContext } from "./context/userName"
+import React, { useEffect, useState, useContext } from "react";
+import { userNameContext } from "./context/userName"
 
-// export default function Dirs(props) {
-//     const fetchDelete = (ev) => {
-//         let num = 0
-//         fetch("http://localhost:8080/users/createDir",
-//             {
-//                 method: 'POST',
-//                 headers: { "content-type": "application/json" },
-//                 body: JSON.stringify({ fileName: ev.target.name, username: currentUser })
-//             })
-//             .then(alert(`${ev.target.name} has been deleted`))
-//         props.func()
-//     }
+export default function Dir(props) {
+    const currentUser = localStorage.getItem("currentUser")
+    const [showFiles, setShowFiles] = useState() 
+    // const showInfoOfDir = (ev) => {
+    //     let data = [];
+    //     console.log(data.length);
+    //     if (data.length === 0) {
+    //         fetch(`http://localhost:8080/users/Dir`,
+    //             {
+    //                 method: 'POST',
+    //                 headers: { "content-type": "application/json" },
+    //                 body: JSON.stringify({ username: currentUser, mainDir: false , dirName: props.dirName })
+    //             }
+    //         )
+    //             // .then((res) => res.json())
+    //             // .then((fileList) => {
+    //             //     data = fileList
+    //             // })
+    //             // .then(() => {
+    //             //     dataFileMap = data.files.map((elem, index) => <Files func={fethcUserFiles} fileName={elem} key={index} />)
+    //             //     dataDirMap = data.dirs.map((elem, index) => <Dir dirName={elem} key={index}/>)
+    //             //     setDirectories(dataDirMap)
+    //             //     setFileMap(dataFileMap)
+    //             // })
+    //     }
+    // }
 
-//     return (
-//         <div>
-//             <h1>Dirs</h1>
-//         </div>
-//     )
-// }
+    return (
+        <div>
+            <h1>{props.dirName}</h1>
+            <button>Show Files</button>
+        </div>
+    )
+}
