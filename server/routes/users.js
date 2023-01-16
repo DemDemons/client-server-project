@@ -10,12 +10,35 @@ router.get('/', function (req, res, next) {
 });
 
 router.post('/fileContent', function (req, res, next) {
-  fs.readFile(`./UserDir/${req.body.username}Dir/${req.body.fileName}`, "utf-8", function (err, data) {
+  fs.readFile(`./UserDir/${req.body.username}/${req.body.fileName}`, "utf-8", function (err, data) {
     if (err) { console.log(err) }
     console.log(data);
     res.send(JSON.stringify(data));
   })
 })
+
+router.post('/changeFileName', function (req, res, next) {
+  fs.rename(`./UserDir/${req.body.username}/${req.body.fileName}`, `./UserDir/${req.body.username}/${req.body.newFileName}`, () => {
+    console.log("\nFile Renamed!\n");
+  })
+  res.send("sent")
+})
+
+  router.post('/copyFile', function (req, res, next) {
+    console.log(fs.existsSync(`./UserDir/${req.body.newDestination}`));
+    if (fs.existsSync(`./UserDir/${req.body.newDestination}`))
+    {
+      fs.copyFile(`./UserDir/${req.body.username}/${req.body.fileName}`, `./UserDir/${req.body.newDestination}/${req.body.fileName}`, (err) => {
+        if (err) {
+          console.log("Error Found:", err);
+        }
+      })
+      res.send({"answer": "true"})
+    }else {
+      res.send({"answer": "false"})
+    }
+  })
+
 
 router.post('/register', function (req, res, next) {
   fs.readFile("./public/users.json", function (err, data) {
@@ -31,16 +54,16 @@ router.post('/register', function (req, res, next) {
       if (err) return console.log(err)
       console.log("it worked!!!");
     })
-    fs.mkdirSync(`./UserDir/${req.body.username}Dir`)
+    fs.mkdirSync(`./UserDir/${req.body.username}`)
   })
 })
 
 router.post('/Dir', function (req, res, next) {
   let files = [];
   try {
-    if(fs.existsSync(`./UserDir/${req.body.username}Dir`)){
+    if (fs.existsSync(`./UserDir/${req.body.username}`)) {
       console.log("if works");
-      fs.readdir(`./UserDir/${req.body.username}Dir`, (err, dir) => {
+      fs.readdir(`./UserDir/${req.body.username}`, (err, dir) => {
         if (err) { console.log(err); }
         dir.forEach(file => {
           files.push(file);
@@ -67,6 +90,24 @@ router.post("/login", function (req, res, next) {
   })
 })
 
+router.post("/addFile", function (req, res, next) {
+  // let content = req.body.fileContent
+  // if(req.body.fileName.includes(".json"))
+  // {
+  //   content = JSON.stringify(req.body.fileContent)
+  // }
+  console.log(req.body.destination.includes(req.body.username));
+  let path = ``;
+  if(req.body.destination.length === 0)
+  {
+    path = `./UserDir/${req.body.username}/${req.body.fileName}`;
+  }
+  path = `./UserDir/${req.body.username}/${req.body.destination}/${req.body.fileName}`;
+  fs.appendFile(path, req.body.fileContent, function (err) {
+    if (err) console.log(err);
+    console.log('Saved!');
+  });
+})
 
 
 module.exports = router;
