@@ -24,20 +24,24 @@ router.post('/changeFileName', function (req, res, next) {
   res.send("sent")
 })
 
-  router.post('/copyFile', function (req, res, next) {
-    console.log(fs.existsSync(`./UserDir/${req.body.newDestination}`));
-    if (fs.existsSync(`./UserDir/${req.body.newDestination}`))
-    {
-      fs.copyFile(`./UserDir/${req.body.username}/${req.body.fileName}`, `./UserDir/${req.body.newDestination}/${req.body.fileName}`, (err) => {
-        if (err) {
-          console.log("Error Found:", err);
-        }
-      })
-      res.send({"answer": "true"})
-    }else {
-      res.send({"answer": "false"})
-    }
-  })
+router.post('/copyFile', function (req, res, next) {
+  console.log(req.body);
+  //when we have multiple files do the change to the path of the copy
+  // let path = ``;
+  // if (req.body.destination.length === 0) {
+  //   path = `./UserDir/${req.body.username}/${req.body.fileName}`;
+  // }
+  if (fs.existsSync(`./UserDir/${req.body.newDestination}`)) {
+    fs.copyFile(`./UserDir/${req.body.username}/${req.body.fileName}`, `./UserDir/${req.body.newDestination}/${req.body.fileName}`, (err) => {
+      if (err) {
+        console.log("Error Found:", err);
+      }
+    })
+    res.send({ "answer": "true" })
+  } else {
+    res.send({ "answer": "false" })
+  }
+})
 
 
 router.post('/register', function (req, res, next) {
@@ -91,15 +95,9 @@ router.post("/login", function (req, res, next) {
 })
 
 router.post("/addFile", function (req, res, next) {
-  // let content = req.body.fileContent
-  // if(req.body.fileName.includes(".json"))
-  // {
-  //   content = JSON.stringify(req.body.fileContent)
-  // }
   console.log(req.body.destination.includes(req.body.username));
   let path = ``;
-  if(req.body.destination.length === 0)
-  {
+  if (req.body.destination.length === 0) {
     path = `./UserDir/${req.body.username}/${req.body.fileName}`;
   }
   path = `./UserDir/${req.body.username}/${req.body.destination}/${req.body.fileName}`;
@@ -108,6 +106,26 @@ router.post("/addFile", function (req, res, next) {
     console.log('Saved!');
   });
 })
+router.get("/fileInfo", (req, res) => {
+  let stats = fs.statSync(`./UserDir/${req.query.username}/${req.query.fileName}`);
+  let fileSizeInBytes = stats.size;
+  let type = req.query.fileName.split(".")[1];
+
+  res.send(JSON.stringify({
+    size: fileSizeInBytes,
+    Mytpe: type
+  }))
+})
+
+router.post("/deleteFile", (req, res) => {
+  fs.unlink(`./UserDir/${req.body.username}/${req.body.fileName}`, (err) => {
+    if (err) {
+      return console.log(err);
+    }
+  });
+  res.send({ "answer": `${req.body.fileName} has been deleted` })
+})
+
 
 
 module.exports = router;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
-import {userNameContext} from "./context/userName"
+import { userNameContext } from "./context/userName"
+import Dirs from "./dirs";
 import Files from "./files";
 
 
@@ -17,22 +18,25 @@ export default function UserInfo() {
     const currentUser = localStorage.getItem("currentUser")
     const fethcUserFiles = () => {
         let data = [];
+        let size = []
         console.log(data.length);
-        if(data.length === 0){
+        if (data.length === 0) {
             fetch(`http://localhost:8080/users/Dir`,
-            {method: 'POST',
-            headers: {"content-type": "application/json"},
-            body:JSON.stringify({username: currentUser})}
+                {
+                    method: 'POST',
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify({ username: currentUser })
+                }
             )
-            .then((res) => res.json())
-            .then((fileList) => {
-                data = fileList
-            })
-            .then(() => {
-                infoMap = data.map((elem, index) => <Files fileName={elem} key={index}/>
-                )
-                setInfo(infoMap)
-            })
+                .then((res) => res.json())
+                .then((fileList) => {
+                    data = fileList
+                })
+                .then(() => {
+                    infoMap = data.map((elem, index) => <Files func={fethcUserFiles} fileName={elem} key={index} />
+                    )
+                    setInfo(infoMap)
+                })
         }
     }
     const addFile = () => {
@@ -47,7 +51,7 @@ export default function UserInfo() {
             })
 
         let counter = 0;
-        counter++; 
+        counter++;
         setAddFileCounter(counter)
     }
 
@@ -56,15 +60,18 @@ export default function UserInfo() {
         fethcUserFiles()
     }, [addFileCounter])
 
-        return (
-            <>
-                <h1>Welcome {currentUser}</h1>
-                <h2>these are your files</h2>
-                <button onClick={addFile}>Add file</button>
+    return (
+        <>
+            <h1>Welcome {currentUser}</h1>
+            <h2>these are your files</h2>
+            <button onClick={addFile}>Add file</button>
+            <ul>{info}</ul>
+            <p>make new dir:</p>
+            <div>
+                {/* <Dirs /> */}
+            </div>
 
-                <ul>{info}</ul>
+        </>
+    );
 
-            </>
-        );
-    
 }
