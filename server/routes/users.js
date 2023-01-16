@@ -38,7 +38,7 @@ router.post('/register', function (req, res, next) {
 router.post('/Dir', function (req, res, next) {
   let files = [];
   try {
-    if(fs.existsSync(`./UserDir/${req.body.username}Dir`)){
+    if (fs.existsSync(`./UserDir/${req.body.username}Dir`)) {
       console.log("if works");
       fs.readdir(`./UserDir/${req.body.username}Dir`, (err, dir) => {
         if (err) { console.log(err); }
@@ -65,6 +65,26 @@ router.post("/login", function (req, res, next) {
     }
     res.send({ "answer": "false" })
   })
+})
+
+router.get("/fileInfo", (req, res) => {
+  let stats = fs.statSync(`./UserDir/${req.query.username}Dir/${req.query.fileName}`);
+  let fileSizeInBytes = stats.size;
+  let type = req.query.fileName.split(".")[1];
+
+  res.send(JSON.stringify({
+    size: fileSizeInBytes,
+    Mytpe: type
+  }))
+})
+
+router.post("/deleteFile", (req, res) => {
+  fs.unlink(`./UserDir/${req.body.username}Dir/${req.body.fileName}`, (err) => {
+    if (err) {
+      return console.log(err);
+    }
+  });
+  res.send({ "answer": `${req.body.fileName} has been deleted` })
 })
 
 
